@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1d3f6e">
+<meta name="description" content="Kurs niemieckiego na co dzień, w pracy i na wakacjach: test poziomujący, lekcje dobrane do Ciebie, wymowa po polsku, odsłuch i ocena wymowy.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Niemiecki na co dzień</title>
+<style>
+/* Układ: jedna kolumna jak w telefonie, dolny pasek zakładek. Kolory: granat + żółć. */
+:root{
+  --bg:#f3f4f7; --surface:#ffffff; --ink:#14203a; --muted:#5b6478; --line:#dde1ea;
+  --accent:#f5b800; --accent-ink:#14203a; --navy:#1d3f6e; --ok:#1e8a4c; --bad:#c2372f; --on-strong:#ffffff;
+  --display:"Arial Black","Segoe UI Black",system-ui,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0e1424; --surface:#18213a; --ink:#eef1f8; --muted:#9aa4bb; --line:#2a3552;
+  --accent:#ffc929; --accent-ink:#14203a; --navy:#9cc2f2; --ok:#4cc483; --bad:#ff7a70; --on-strong:#0e1424; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+.app{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:calc(12px + env(safe-area-inset-top,0px)) 120px;display:flex;flex-direction:column;gap:16px}
+#view{display:flex;flex-direction:column;gap:16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:900;font-size:20px;display:flex;align-items:center;gap:10px}
+.brand i{display:inline-block;width:14px;height:22px;background:repeating-linear-gradient(-45deg,var(--accent) 0 5px,var(--ink) 5px 10px);border-radius:2px}
+.stats{display:flex;gap:8px;font-variant-numeric:tabular-nums}
+.chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-weight:700;font-size:14px;white-space:nowrap}
+h1,h2,h3{margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:900;font-size:21px}
+h3{font-size:18px}
+p{margin:0}
+.lead{color:var(--muted)}
+.note{font-size:14px;color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px 18px;display:flex;flex-direction:column;gap:14px}
+.card.hero{border:2px solid var(--accent)}
+.tag{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.star{display:inline-block;font-size:12px;font-weight:800;border-radius:6px;padding:2px 6px;background:var(--accent);color:var(--accent-ink)}
+.lvl{display:inline-block;font-size:12px;font-weight:800;border-radius:6px;padding:2px 6px;background:var(--navy);color:var(--surface);letter-spacing:.04em}
+.ru{font-family:var(--display);font-weight:900;font-size:28px;line-height:1.15;overflow-wrap:anywhere}
+.ru.sm{font-size:21px}
+.fon{font-size:21px;font-weight:700;color:var(--navy);letter-spacing:.01em}
+.fon.sm{font-size:16px}
+.fon small{display:block;font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0}
+.pl{font-size:18px;padding-top:12px;border-top:1px dashed var(--line)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.btn{flex:1 1 0;min-width:0;border-radius:14px;padding:14px 12px;font-weight:700;font-size:16px;background:var(--bg);border:1px solid var(--line)}
+.btn.main{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ok{background:var(--ok);color:var(--on-strong);border-color:var(--ok)}
+.btn.bad{background:transparent;color:var(--bad);border-color:var(--bad)}
+.btn.mic{background:var(--navy);color:var(--surface);border-color:var(--navy)}
+.btn.small{flex:0 0 auto;padding:8px 12px;font-size:14px;border-radius:10px}
+.btn:disabled{opacity:.45}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.steps{display:flex;gap:6px}
+.steps span{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.steps span.done{background:var(--accent)}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 4px;font-size:13px;font-weight:700}
+.tabs button[aria-current="step"]{background:var(--navy);color:var(--surface);border-color:var(--navy)}
+.tabs button.done::before{content:"✓ ";color:var(--ok)}
+.tabs button[aria-current="step"].done::before{color:var(--surface)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:14px;padding:12px 14px;font-size:17px;font-weight:700}
+.opt.sel{border-color:var(--navy);background:color-mix(in srgb,var(--accent) 22%,var(--surface))}
+.opt small{display:block;font-weight:400;font-size:14px;color:var(--muted)}
+input.txt{font:inherit;width:100%;padding:14px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--surface))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.gap{display:inline-block;min-width:3.2em;border-bottom:3px solid var(--accent);text-align:center}
+.big{font-family:var(--display);font-weight:900;font-size:40px;line-height:1;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:4px}
+.tile span{color:var(--muted);font-size:14px}
+.bar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.list{display:flex;flex-direction:column;gap:8px}
+.li{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left;width:100%}
+.li > div{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.li.locked{opacity:.55}
+.abc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.abc button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.abc b{font-family:var(--display);font-size:24px;color:var(--navy)}
+.li .num{font-family:var(--display);font-size:20px;color:var(--muted);flex:none;width:28px;text-align:center}
+.dots{display:flex;gap:4px;flex:none}
+.dots i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--ok)}
+.task{display:flex;gap:14px;align-items:center}
+.task .ico{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--bg)}
+.task > div{flex:1;min-width:0}
+.task.done .ico{background:color-mix(in srgb,var(--ok) 18%,var(--surface))}
+.rules{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.rules b{color:var(--navy)}
+.exm{display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid var(--line)}
+.line{display:flex;flex-direction:column;gap:3px;padding-top:10px;border-top:1px solid var(--line)}
+.who{font-weight:800;color:var(--muted);font-size:13px}
+.chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;align-items:end;height:120px}
+.chart div{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;font-size:12px;color:var(--muted)}
+.chart i{display:block;width:100%;background:var(--accent);border-radius:6px 6px 2px 2px;min-height:2px}
+.chart i.goal{background:var(--ok)}
+.warn{font-size:14px;background:color-mix(in srgb,var(--bad) 10%,var(--surface));border:1px solid var(--bad);border-radius:12px;padding:10px 12px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+nav > div{display:flex;width:100%;max-width:560px}
+nav button{flex:1;background:none;border:0;padding:8px 4px;border-radius:12px;font-weight:700;font-size:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button svg{width:24px;height:24px}
+nav button[aria-current="page"]{color:var(--ink);background:color-mix(in srgb,var(--accent) 30%,transparent)}
+#mic{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom,0px))}
+#mic .card{width:100%;max-width:560px;box-shadow:0 -8px 30px rgba(0,0,0,.25);border:2px solid var(--navy)}
+.score{font-family:var(--display);font-size:44px;line-height:1}
+.pulse{width:14px;height:14px;border-radius:50%;background:var(--bad);display:inline-block;vertical-align:middle}
+@media (prefers-reduced-motion:no-preference){.pulse{animation:p 1s infinite}@keyframes p{50%{opacity:.25}}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand"><i aria-hidden="true"></i>Niemiecki na co dzień</div>
+    <div class="stats"><span class="chip" id="chipStreak" title="Dni nauki z rzędu">🔥 0</span><span class="chip" id="chipPoints" title="Punkty">0 pkt</span></div>
+  </header>
+  <main id="view"></main>
+</div>
+<div id="mic" hidden></div>
+
+<nav aria-label="Zakładki"><div>
+  <button data-tab="today" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Dziś</button>
+  <button data-tab="course"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h7"/></svg>Kurs</button>
+  <button data-tab="review"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>Powtórki</button>
+  <button data-tab="progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Postępy</button>
+</div></nav>
+
+<script src="kurs.js"></script>
+<script>
+"use strict";
+/* ================= stałe i stan ================= */
+const K = window.KURS;
+const STORE_KEY = "nnd-v1";
+const DAY_MS = 864e5, TICK_S = 10, IDLE_MS = 90e3;
+const INTERVALS = [0, 1, 3, 7, 14, 30];      // dni do kolejnej powtórki dla poziomu 0–5
+const KNOWN_BOX = 3, REVIEW_MAX = 20, WORK_LEN = 8, QUIZ_LEN = 10;
+const STEPS = [["g","Gramatyka"],["e","Ćwiczenia"],["w","Słówka"],["l","Słuchanie"]];
+const TOTAL_UNITS = K.units.length + K.soon.length;
+const goalMin = () => S.profile?.min || 30;
+const RANK = {A1:1, A2:2, B1:3, B2:4}, rank = l => RANK[l] || 1;
+
+const dayKey = t => { const d = new Date(t); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+const today = () => dayKey(Date.now());
+const addDays = n => dayKey(Date.now() + n*DAY_MS);
+const blank = () => ({points:0, streak:0, lastDay:"", cards:{}, units:{}, placement:null, profile:null, sec:{}, quizzes:0, bestQuiz:0});
+
+let S = blank();
+let tab = "today", scr = null, mic = null;
+
+/* Stan z pamięci telefonu lub z pliku kopii to dane z zewnątrz – przepuszczamy tylko znane pola o właściwych typach. */
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const LEVELS = new Set(["A1", "A2", "B1", "B1+ (blisko B2)", "bez testu"]);
+const AREAS = [["klienci","Kontakt z klientami i firmami","telefony, maile, rozmowy, oferty"],["biuro","Biuro i administracja","dokumenty, spotkania, faktury"],["zagranica","Praca w Niemczech lub z Niemcami","rozmowa o pracę, umowa, współpracownicy"],["administracja","Administracja publiczna / urząd","pisma, wnioski, petenci, procedury"],["magazyn","Magazyn i praca fizyczna","dostawy, instrukcje, BHP"],["nie","Nie potrzebuję niemieckiego do pracy","tylko życie i wakacje"]];
+const INTERESTS = [["trip","Podróże i wakacje","hotel, dworzec, droga, plaża"],["life","Codzienne życie","zakupy, lekarz, urzędy, telefon"],["dom","Rodzina i dom","dzieci, szkoła, sąsiedzi"],["jedzenie","Jedzenie i restauracje","zamawianie, zakupy, przepisy"],["rozmowa","Codzienna rozmowa","small talk, pogoda, hobby, sąsiedzi, opinie"]];
+const GOALS = [["A2","Dogadać się w pracy i na wakacjach","poziom A2 – około 6–9 miesięcy"],["B1","Swobodnie rozmawiać","poziom B1 – około 12–18 miesięcy"],["B2","Mówić biegle","poziom B2 – około 2–3 lata"]];
+const MINS = [[15,"15 minut dziennie","spokojnie, bez presji"],[30,"30 minut dziennie","polecane – widać postępy"],[45,"45 minut dziennie","intensywnie"]];
+const okKeys = (arr, list) => (Array.isArray(arr) ? arr : []).filter(k => list.some(x => x[0] === k)).slice(0, 10);
+const num = (v, max = 1e9) => Number.isFinite(v) ? Math.min(Math.max(Math.floor(v), 0), max) : 0;
+const date = v => typeof v === "string" && DATE_RE.test(v) ? v : "";
+function sanitizeState(raw){
+  const s = raw && typeof raw === "object" ? raw : {};
+  const cards = {}, units = {}, sec = {};
+  for(const [id, c] of Object.entries(s.cards || {})){
+    if(/^(u\d+:\d+|w:\d+)$/.test(id) && c && typeof c === "object" && date(c.due)) cards[id] = {b: num(c.b, INTERVALS.length-1), due: c.due};
+  }
+  for(const [id, u] of Object.entries(s.units || {})){
+    if(/^u\d+$/.test(id) && u && typeof u === "object") units[id] = Object.fromEntries(STEPS.filter(([k]) => u[k]).map(([k]) => [k, 1]));
+  }
+  for(const [d, v] of Object.entries(s.sec || {})) if(date(d)) sec[d] = num(v, 86400);
+  const p = s.placement;
+  const placement = p && typeof p === "object" && LEVELS.has(p.lvl)
+    ? {score: num(p.score, K.test.length), lvl: p.lvl, rank: Math.max(1, num(p.rank, 4)), date: date(p.date)} : null;
+  const q = s.profile;
+  const profile = q && typeof q === "object" ? {name: String(q.name||"").slice(0,30), areas: okKeys(q.areas, AREAS), interests: okKeys(q.interests, INTERESTS),
+    goal: GOALS.some(g => g[0]===q.goal) ? q.goal : "A2", min: MINS.some(m => m[0]===q.min) ? q.min : 30} : null;
+  return {points: num(s.points), streak: num(s.streak, 1e5), lastDay: date(s.lastDay), cards, units, placement, profile, sec,
+    quizzes: num(s.quizzes), bestQuiz: num(s.bestQuiz, QUIZ_LEN)};
+}
+function load(){ try{ S = sanitizeState(JSON.parse(localStorage.getItem(STORE_KEY)||"null")); }catch(e){ S = blank(); } }
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){ /* brak miejsca lub tryb prywatny – stan zostaje w pamięci */ } }
+if(navigator.storage?.persist) navigator.storage.persist().catch(()=>{});
+
+/* ================= katalog kart (słówka + zwroty) ================= */
+const CARD = {};
+K.units.forEach(u => u.words.forEach((w,k) => { CARD[u.id+":"+k] = {ru:w[0], fon:w[1], pl:w[2], src:u.title}; }));
+K.work.items.forEach((w,k) => { CARD["w:"+k] = {ru:w[1], fon:w[2], pl:w[3], src:K.work.cats[w[0]].name}; });
+const boxOf = id => S.cards[id]?.b ?? -1;
+function rate(id, ok){
+  const b = ok ? Math.min(Math.max(boxOf(id),0)+1, INTERVALS.length-1) : 0;
+  S = {...S, cards:{...S.cards, [id]:{b, due: addDays(ok ? INTERVALS[b] : 0)}}};
+}
+const dueIds = () => Object.keys(S.cards).filter(id => CARD[id] && S.cards[id].due <= today())
+  .sort((a,b) => S.cards[a].due.localeCompare(S.cards[b].due) || S.cards[a].b - S.cards[b].b);
+const learned = () => Object.keys(S.cards).filter(id => CARD[id] && S.cards[id].b >= KNOWN_BOX);
+
+/* ================= punkty, seria dni, czas nauki ================= */
+function touchStreak(){
+  const t = today();
+  if(S.lastDay === t) return;
+  S = {...S, streak: S.lastDay === dayKey(Date.now()-DAY_MS) ? S.streak+1 : 1, lastDay: t};
+}
+function addPoints(n){ touchStreak(); S = {...S, points: S.points + n}; save(); }
+const minutesOn = d => Math.floor((S.sec[d]||0)/60);
+let lastAct = Date.now(), ticks = 0;
+document.addEventListener("pointerdown", () => { lastAct = Date.now(); }, {passive:true});
+setInterval(() => {
+  const busy = window.speechSynthesis?.speaking || mic?.status === "listening";
+  if(document.visibilityState !== "visible" || (!busy && Date.now()-lastAct > IDLE_MS)) return;
+  const t = today();
+  S = {...S, sec:{...S.sec, [t]:(S.sec[t]||0) + TICK_S}};
+  if(++ticks % 6 === 0){ save(); if(!scr && tab==="today") render(); }
+}, TICK_S*1000);
+
+/* ================= odsłuch (telefon czyta) ================= */
+const canSpeak = "speechSynthesis" in window;
+let voices = [];
+function pickVoices(){
+  const all = (speechSynthesis.getVoices()||[]).filter(v => /^de[-_]/i.test(v.lang));
+  voices = [...all.filter(v => /^de[-_]DE/i.test(v.lang)), ...all].filter((v,i,a) => a.indexOf(v)===i);
+}
+if(canSpeak){ pickVoices(); speechSynthesis.onvoiceschanged = pickVoices; }
+function utter(text, slow, who){
+  const u = new SpeechSynthesisUtterance(text);
+  const v = who === "B" ? (voices[1] || voices[0]) : voices[0];
+  if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "de-DE";
+  u.rate = slow ? 0.6 : 0.92;
+  u.pitch = who === "B" && voices.length < 2 ? 0.8 : 1;
+  return u;
+}
+function speak(text, slow){ if(!canSpeak) return; speechSynthesis.cancel(); speechSynthesis.speak(utter(text, slow)); lastAct = Date.now(); }
+function speakDialog(lines, slow){ if(!canSpeak) return; speechSynthesis.cancel(); lines.forEach(l => speechSynthesis.speak(utter(l[1], slow, l[0]))); lastAct = Date.now(); }
+
+/* ================= ocena wymowy (mikrofon) ================= */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const norm = s => s.toLowerCase().replace(/ß/g,"ss").replace(/[^\p{L}\p{N} ]+/gu," ").trim().split(/\s+/).filter(Boolean);
+function lcs(a, b){
+  const m = Array.from({length:a.length+1}, () => new Array(b.length+1).fill(0));
+  for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++)
+    m[i][j] = a[i-1]===b[j-1] ? m[i-1][j-1]+1 : Math.max(m[i-1][j], m[i][j-1]);
+  return m[a.length][b.length];
+}
+function scoreSpeech(target, heard){
+  const t = norm(target.replace(/\(.*?\)/g,"")), h = norm(heard);
+  if(!t.length) return {pct:0, missing:[]};
+  return {pct: Math.round(lcs(t,h) / t.length * 100), missing: t.filter(w => !h.includes(w))};
+}
+function startMic(text){
+  if(!SR){ mic = {text, status:"nosupport"}; renderMic(); return; }
+  if(canSpeak) speechSynthesis.cancel();
+  const r = new SR();
+  r.lang = "de-DE"; r.interimResults = false; r.maxAlternatives = 5;
+  mic = {text, status:"listening", rec:r};
+  r.onresult = e => {
+    const alts = Array.from(e.results[0]).map(a => a.transcript);
+    const best = alts.map(h => ({h, ...scoreSpeech(text, h)})).sort((a,b) => b.pct - a.pct)[0];
+    mic = {text, status:"done", heard:best.h, pct:best.pct, missing:best.missing};
+    if(best.pct >= 85) addPoints(5);
+    renderMic();
+  };
+  r.onerror = e => { mic = {text, status:"error", code:e.error}; renderMic(); };
+  r.onend = () => { if(mic?.status === "listening"){ mic = {text, status:"error", code:"no-speech"}; renderMic(); } };
+  try{ r.start(); }catch(err){ mic = {text, status:"error", code:"start"}; }
+  renderMic();
+}
+function renderMic(){
+  const el = document.getElementById("mic");
+  if(!mic){ el.hidden = true; el.innerHTML = ""; return; }
+  el.hidden = false;
+  let body;
+  if(mic.status === "listening") body = `<p class="tag"><span class="pulse"></span> Słucham… powiedz:</p><p class="ru sm">${esc(mic.text)}</p><button class="btn" data-act="micStop">Zatrzymaj</button>`;
+  else if(mic.status === "nosupport") body = `<p class="warn">Ta przeglądarka nie rozpoznaje mowy. Otwórz aplikację w Chrome na Androidzie.</p><button class="btn" data-act="micClose">Zamknij</button>`;
+  else if(mic.status === "error"){
+    const msg = mic.code === "not-allowed" || mic.code === "service-not-allowed"
+      ? "Brak zgody na mikrofon. Dotknij ikonki obok adresu strony (albo Ustawienia → Aplikacje → Chrome → Uprawnienia) i zezwól na mikrofon."
+      : mic.code === "network" ? "Rozpoznawanie mowy potrzebuje internetu. Sprawdź połączenie i spróbuj ponownie."
+      : "Nic nie usłyszałem. Trzymaj telefon bliżej i zacznij mówić zaraz po dotknięciu.";
+    body = `<p class="warn">${msg}</p><div class="row"><button class="btn" data-act="micClose">Zamknij</button><button class="btn mic" data-mic="${esc(mic.text)}">🎤 Jeszcze raz</button></div>`;
+  } else {
+    const verdict = mic.pct >= 85 ? "Świetnie! Brzmi dobrze." : mic.pct >= 60 ? "Dobrze. Popraw słowa poniżej." : "Spróbuj jeszcze raz, wolniej.";
+    const col = mic.pct >= 85 ? "var(--ok)" : mic.pct >= 60 ? "var(--accent)" : "var(--bad)";
+    body = `<div class="row" style="align-items:center"><span class="score" style="color:${col}">${mic.pct}%</span><p style="flex:1;min-width:0"><b>${verdict}</b><br><span class="note">Usłyszałem: „${esc(mic.heard)}”</span></p></div>
+      ${mic.missing.length ? `<p class="note">Popraw: <b>${mic.missing.map(esc).join(", ")}</b></p>` : ""}
+      <div class="row"><button class="btn" data-say="${esc(mic.text)}">🔊 Wzór</button><button class="btn mic" data-mic="${esc(mic.text)}">🎤 Jeszcze raz</button><button class="btn" data-act="micClose">Zamknij</button></div>`;
+  }
+  el.innerHTML = `<div class="card" role="dialog" aria-label="Ocena wymowy">${body}</div>`;
+}
+
+/* ================= pomocnicze widoki ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle = a => { const r=[...a]; for(let i=r.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [r[i],r[j]]=[r[j],r[i]]; } return r; };
+const steps = (n, total) => `<div class="steps" aria-label="Postęp ${n} z ${total}">${Array.from({length:total},(_,i)=>`<span class="${i<n?"done":""}"></span>`).join("")}</div>`;
+function sayBtns(text, small){
+  const c = small ? "small" : "";
+  const speakers = canSpeak ? `<button class="btn ${small?"small":"main"}" data-say="${esc(text)}">🔊${small?"":" Posłuchaj"}</button><button class="btn ${c}" data-say-slow="${esc(text)}">🐢${small?"":" Wolno"}</button>` : "";
+  return `<div class="row">${speakers}<button class="btn mic ${c}" data-mic="${esc(text)}">🎤${small?"":" Powiedz"}</button></div>`;
+}
+const back = (label, act) => `<div><button class="btn small" data-act="${act}">← ${label}</button></div>`;
+const unitDone = u => STEPS.every(([s]) => S.units[u.id]?.[s]);
+const nextStep = u => (STEPS.find(([s]) => !S.units[u.id]?.[s]) || STEPS[0])[0];
+const ptags = () => new Set(["core", ...(S.profile?.areas||[]), ...(S.profile?.interests||[])]);
+const isRec = u => u.tags.some(x => ptags().has(x));
+function currentUnitIdx(){
+  const r = S.placement?.rank ?? 1;
+  let i = K.units.findIndex(u => rank(u.lvl) >= r && isRec(u) && !unitDone(u));
+  if(i < 0) i = K.units.findIndex(u => rank(u.lvl) >= r && !unitDone(u));
+  return i >= 0 ? i : K.units.findIndex(u => !unitDone(u));
+}
+function markStep(u, s){ S = {...S, units:{...S.units, [u.id]:{...(S.units[u.id]||{}), [s]:1}}}; touchStreak(); save(); }
+const fill = (sentence, opt) => opt.startsWith("'") ? sentence.replace(" ___", opt) : sentence.replace("___", opt);
+const optsHtml = (opts, ok, picked, attr) => `<div class="opts">${opts.map((o,k)=>`<button class="opt ${picked!==null ? (k===ok?"right":k===picked?"wrong":"") : ""}" ${attr}="${k}" ${picked!==null?"disabled":""}>${esc(o)}</button>`).join("")}</div>`;
+
+/* ================= ekran: pytania na start (profil) ================= */
+const OB_TOTAL = 5;
+function newOnboard(){ const q = S.profile; return {t:"onboard", step:0, name:q?.name||"", areas:[...(q?.areas||[])], interests:[...(q?.interests||[])], goal:q?.goal||"", min:q?.min||0}; }
+function obChoice(list, sel, key, multi){
+  return `<div class="opts">${list.map(([k,l,s]) => `<button class="opt ${(multi ? sel.includes(k) : sel===k) ? "sel":""}" data-ob="${key}|${esc(String(k))}">${esc(l)}<small>${esc(s)}</small></button>`).join("")}</div>`;
+}
+function viewOnboard(){
+  const o = scr, nav = (ok, last) => `<div class="row">${o.step>0 ? `<button class="btn" data-act="obBack">← Wstecz</button>`:""}<button class="btn main" data-act="${last?"obFinish":"obNext"}" ${ok?"":"disabled"}>${last?"Zaczynamy":"Dalej"}</button></div>`;
+  let body;
+  if(o.step===0) body = `<h2>Witaj! Poznajmy się</h2><p class="lead">Zadam kilka pytań, żeby lekcje były o tym, co Cię naprawdę interesuje. Zajmie to minutę.</p>
+    <label for="obName"><b>Jak masz na imię?</b></label><input class="txt" id="obName" maxlength="30" autocomplete="given-name" value="${esc(o.name)}" placeholder="np. Anna">${nav(true)}`;
+  else if(o.step===1) body = `<h2>Gdzie będziesz używać niemieckiego w pracy?</h2><p class="lead">Możesz zaznaczyć kilka odpowiedzi.</p>${obChoice(AREAS, o.areas, "areas", true)}${nav(o.areas.length>0)}`;
+  else if(o.step===2) body = `<h2>Co jeszcze Cię interesuje?</h2><p class="lead">Dobiorę lekcje i zwroty. Zaznacz wszystko, co pasuje.</p>${obChoice(INTERESTS, o.interests, "interests", true)}${nav(o.interests.length>0)}`;
+  else if(o.step===3) body = `<h2>Jaki masz cel?</h2>${obChoice(GOALS, o.goal, "goal", false)}${nav(!!o.goal)}`;
+  else if(o.step===4) body = `<h2>Ile czasu dziennie możesz się uczyć?</h2><p class="lead">Lepiej mało, ale codziennie.</p>${obChoice(MINS, o.min, "min", false)}${nav(!!o.min)}`;
+  else body = `<h2>Gotowe${o.name ? ", "+esc(o.name) : ""}!</h2><p class="lead">Na podstawie odpowiedzi ułożę kurs: lekcje „dla Ciebie” będą pierwsze, a pozostałe zawsze możesz otworzyć w zakładce Kurs. Teraz krótki test, który pokaże, od którego poziomu zacząć.</p>${nav(true, true)}`;
+  return `${o.step<OB_TOTAL ? steps(o.step, OB_TOTAL) : ""}<section class="card">${body}</section>`;
+}
+
+/* ================= ekran: Dziś ================= */
+function task(ico, title, sub, btn, act, done){
+  return `<div class="task ${done?"done":""}"><span class="ico" aria-hidden="true">${done?"✓":ico}</span><div><b>${title}</b><p class="note">${sub}</p></div>${btn?`<button class="btn small main" data-act="${act}">${btn}</button>`:""}</div>`;
+}
+const workIds = () => {
+  const tg = ptags();
+  const ids = K.work.items.map((w,k) => [w[0],"w:"+k]).filter(([c]) => K.work.cats[c].tags.some(x => tg.has(x))).map(x => x[1]);
+  return ids.length ? ids : K.work.items.map((_,k) => "w:"+k);
+};
+function viewToday(){
+  const gm = goalMin(), min = minutesOn(today()), pct = Math.min(100, Math.round(min/gm*100));
+  const due = dueIds().length, ui = currentUnitIdx(), u = K.units[ui];
+  const doneUnits = K.units.filter(unitDone).length;
+  const name = S.profile?.name ? ", "+esc(S.profile.name) : "";
+  const testCard = !S.placement ? `<section class="card hero"><span class="tag">Zacznij tutaj</span><h2>Test poziomujący</h2>
+    <p class="lead">20 pytań, około 10 minut. Sprawdzę, co już umiesz, i pominiemy to, żeby nie tracić czasu. Nie zgaduj – „Nie wiem” jest w porządku.</p>
+    <div class="row"><button class="btn main" data-act="testStart">Zrób test</button><button class="btn" data-act="testSkip">Pomiń, zacznę od lekcji 1</button></div></section>` : "";
+  const lessonTask = u
+    ? task("📘", `Lekcja ${ui+1}: ${esc(u.title)}`, `${esc(u.topic)} · teraz: ${STEPS.find(s=>s[0]===nextStep(u))[1].toLowerCase()} · ok. 15 min`, "Dalej", "unitContinue", false)
+    : task("🏁", "Wszystkie dostępne lekcje skończone", "Nowe lekcje pojawią się w aktualizacji", "", "", true);
+  const goalTxt = GOALS.find(g => g[0]===S.profile?.goal)?.[1] || "";
+  return `<h2>Cześć${name}!</h2>${testCard}
+  <section class="card"><div class="row" style="justify-content:space-between;align-items:baseline"><h2>Dzisiaj</h2><span class="note">${min} z ${gm} min</span></div>
+    <div class="bar" role="img" aria-label="${min} z ${gm} minut"><i style="width:${pct}%"></i></div>
+    ${task("🔁", "Powtórki", due ? `${Math.min(due,REVIEW_MAX)} słówek czeka · ok. 10 min` : "Na dziś wszystko powtórzone", due?"Start":"", "reviewStart", !due)}
+    ${lessonTask}
+    ${task("💬", "Zwroty dla Ciebie", `${WORK_LEN} zwrotów z Twoich tematów · ok. 5 min`, "Start", "workStart", false)}
+  </section>
+  <section class="card"><span class="tag">Twoja droga${S.profile ? " do "+esc(S.profile.goal) : ""}</span>
+    <div class="bar"><i style="width:${Math.round(doneUnits/TOTAL_UNITS*100)}%"></i></div>
+    <p class="note">${doneUnits} z ${TOTAL_UNITS} lekcji ukończonych${S.placement?` · poziom z testu: <b>${esc(S.placement.lvl)}</b>`:""}.${goalTxt ? " Cel: "+esc(goalTxt.toLowerCase())+"." : ""}</p></section>`;
+}
+
+/* ================= ekran: Kurs ================= */
+function viewCourse(){
+  const start = S.placement?.rank ?? 1;
+  const row = (u,i) => {
+    const d = STEPS.filter(([s]) => S.units[u.id]?.[s]).length;
+    const skip = rank(u.lvl) < start && !d ? `<span class="note">Możesz pominąć (wynik testu)</span>` : "";
+    return `<button class="li" data-unit="${i}"><span class="num">${i+1}</span><div><span><span class="lvl">${u.lvl}</span> ${isRec(u) && !(u.tags.length===1 && u.tags[0]==="core") ? '<span class="star">dla Ciebie</span> ':""}<b>${esc(u.title)}</b></span><span class="note">${esc(u.topic)}</span>${skip}</div><span class="dots" aria-label="${d} z 4 kroków">${STEPS.map(([s])=>`<i class="${S.units[u.id]?.[s]?"on":""}"></i>`).join("")}</span></button>`;
+  };
+  return `<h2>Kurs</h2><p class="lead">Każda lekcja ma 4 kroki: gramatyka, ćwiczenia, słówka i słuchanie. Lekcje oznaczone „dla Ciebie” pasują do Twoich odpowiedzi.</p>
+  <button class="li" data-act="abc"><span class="num">🔤</span><div><b>Wymowa – litery i dźwięki</b><span class="note">ä, ö, ü, ß, ch, sch… z przykładami</span></div><span aria-hidden="true">›</span></button>
+  <div class="list">${K.units.map(row).join("")}</div>
+  <h3>Wkrótce</h3>
+  <div class="list">${K.soon.map((s,i)=>`<div class="li locked"><span class="num">${K.units.length+i+1}</span><div><span><span class="lvl">${s[0]}</span> <b>${esc(s[1])}</b></span><span class="note">${esc(s[2])}</span></div><span aria-hidden="true">🔒</span></div>`).join("")}</div>`;
+}
+
+/* ================= ekran: wymowa ================= */
+function viewAbc(){
+  return `${back("Wróć","home")}<h2>Wymowa – litery i dźwięki</h2>
+  <p class="lead">Niemiecki czyta się prawie tak, jak jest napisany. Dotknij kafelka, żeby usłyszeć przykład. Uważaj na: <b>w</b> (czytane „w”), <b>v</b> (czytane „f”), <b>z</b> (czytane „c”), <b>s</b> przed samogłoską (czytane „z”).</p>
+  <div class="abc">${K.abc.map(a=>`<button data-say="${esc(a[2])}"><b>${esc(a[0])}</b><span>${esc(a[1])}</span><span class="note">${esc(a[2])} – ${esc(a[3])} – ${esc(a[4])}</span></button>`).join("")}</div>`;
+}
+
+/* ================= ekran: lekcja ================= */
+function viewUnit(){
+  const u = K.units[scr.u];
+  const tabs = `<div class="tabs">${STEPS.map(([s,l])=>`<button data-step="${s}" class="${S.units[u.id]?.[s]?"done":""}" ${scr.step===s?'aria-current="step"':""}>${l}</button>`).join("")}</div>`;
+  const head = `${back("Kurs","toCourse")}<div><span class="lvl">${u.lvl}</span> <span class="tag">Lekcja ${scr.u+1} · ${esc(u.topic)}</span><h2>${esc(u.title)}</h2></div>${tabs}`;
+  return head + {g:unitGrammar, e:unitDrill, w:unitWords, l:unitListen}[scr.step](u);
+}
+function unitGrammar(u){
+  return `<section class="card"><p>${esc(u.intro)}</p><ul class="rules">${u.rules.map(r=>`<li>${r}</li>`).join("")}</ul></section>
+  <section class="card"><span class="tag">Przykłady – posłuchaj i powiedz</span>
+    ${u.ex.map(e=>`<div class="exm"><p class="ru sm">${esc(e[0])}</p><p class="fon sm">${esc(e[1])}</p><p class="note">${esc(e[2])}</p>${sayBtns(e[0], true)}</div>`).join("")}
+  </section>
+  <button class="btn main" data-act="grammarDone">Rozumiem – przejdź do ćwiczeń</button>`;
+}
+function unitDrill(u){
+  if(scr.i >= u.drill.length){
+    return `<section class="card"><span class="tag">Ćwiczenia skończone</span><p class="big">${scr.correct} / ${u.drill.length}</p>
+      <p class="lead">${scr.correct >= 5 ? "Świetnie, zasada siedzi." : "Przeczytaj jeszcze raz gramatykę i spróbuj ponownie."}</p>
+      <div class="row"><button class="btn" data-act="drillAgain">Jeszcze raz</button><button class="btn main" data-step="w">Dalej: słówka</button></div></section>`;
+  }
+  const [sent, opts, ok, hint] = u.drill[scr.i], done = scr.picked !== null;
+  const full = fill(sent, opts[ok]);
+  const shown = esc(sent).replace("___", `<span class="gap">${done ? esc(opts[scr.picked]) : "&nbsp;"}</span>`);
+  return `${steps(scr.i, u.drill.length)}<section class="card" aria-live="polite"><span class="tag">Wybierz brakujące słowo · ${scr.i+1} z ${u.drill.length}</span>
+    <p class="ru sm">${shown}</p>
+    ${optsHtml(opts, ok, scr.picked, "data-pick")}
+    ${done ? `<p class="pl">${scr.picked===ok?"✅ Dobrze!":"❌ Poprawnie:"} <b>${esc(full)}</b><br><span class="note">Wskazówka: ${esc(hint)}</span></p>${sayBtns(full, true)}<button class="btn main" data-act="drillNext">Dalej</button>` : ""}
+  </section>`;
+}
+function wordCard(c, i, total, shown, tagText){
+  return `${steps(i, total)}<section class="card" aria-live="polite"><span class="tag">${esc(tagText)} · ${i+1} z ${total}</span>
+    <p class="ru">${esc(c.ru)}</p><p class="fon">${esc(c.fon)}<small>czytaj tak, jak napisane · WIELKIE litery = akcent</small></p>
+    ${sayBtns(c.ru.replace(/\s*\(.*?\)/g,""), false)}
+    ${shown ? `<p class="pl">${esc(c.pl)}</p><div class="row"><button class="btn bad" data-rate="0">Jeszcze nie umiem</button><button class="btn ok" data-rate="1">Umiem</button></div>`
+            : `<button class="btn" data-act="reveal">Pokaż tłumaczenie</button>`}
+  </section>`;
+}
+function unitWords(u){
+  if(scr.i >= u.words.length){
+    return `<section class="card"><span class="tag">Słówka dodane do powtórek</span><p class="big">${scr.correct} / ${u.words.length}</p>
+      <p class="lead">Wszystkie słowa z tej lekcji będą wracać w zakładce Powtórki, aż je zapamiętasz.</p>
+      <button class="btn main" data-step="l">Dalej: słuchanie</button></section>`;
+  }
+  const w = u.words[scr.i];
+  return wordCard({ru:w[0], fon:w[1], pl:w[2]}, scr.i, u.words.length, scr.shown, "Nowe słówko");
+}
+function unitListen(u){
+  const d = u.dialog;
+  if(scr.phase === "text"){
+    return `<section class="card"><span class="tag">Tekst rozmowy</span><h3>${esc(d.title)}</h3>
+      <p class="note">Wynik: ${scr.correct} z ${d.qs.length}. Posłuchaj każdej kwestii i powiedz ją sam.</p>
+      ${d.lines.map(l=>`<div class="line"><span class="who">${l[0]==="A"?"Osoba A":"Osoba B"}</span><p><b>${esc(l[1])}</b></p><p class="fon sm">${esc(l[2])}</p><p class="note">${esc(l[3])}</p>${sayBtns(l[1], true)}</div>`).join("")}
+      <button class="btn main" data-act="unitFinish">Zakończ lekcję</button></section>`;
+  }
+  const player = canSpeak ? `<div class="row"><button class="btn main" data-act="playDialog">▶ Odtwórz rozmowę</button><button class="btn" data-act="playDialogSlow">🐢 Wolniej</button></div>`
+    : `<p class="warn">Ta przeglądarka nie czyta na głos. Otwórz aplikację w Chrome.</p>`;
+  const [qt, opts, ok] = d.qs[scr.i], done = scr.picked !== null;
+  return `<section class="card"><span class="tag">Słuchanie</span><h3>${esc(d.title)}</h3><p class="lead">Posłuchaj rozmowy (możesz kilka razy) i odpowiedz na pytania. Tekst pokażę na końcu.</p>${player}</section>
+  ${steps(scr.i, d.qs.length)}<section class="card" aria-live="polite"><span class="tag">Pytanie ${scr.i+1} z ${d.qs.length}</span><p><b>${esc(qt)}</b></p>
+    ${optsHtml(opts, ok, scr.picked, "data-pick")}
+    ${done ? `<button class="btn main" data-act="listenNext">${scr.i+1 < d.qs.length ? "Następne pytanie" : "Pokaż tekst rozmowy"}</button>` : ""}
+  </section>`;
+}
+
+/* ================= ekrany: powtórki, zwroty, quiz ================= */
+function viewReviewTab(){
+  const due = dueIds().length, total = Object.keys(S.cards).length;
+  return `<h2>Powtórki</h2>
+  <section class="card"><p class="big">${due}</p><p class="lead">${due ? "słówek czeka dziś na powtórkę." : "Na dziś wszystko powtórzone. Wróć jutro!"}</p>
+    ${due ? `<button class="btn main" data-act="reviewStart">Powtórz teraz</button>` : ""}
+    <p class="note">Słowo wraca po 1, 3, 7, 14 i 30 dniach. Gdy go nie pamiętasz, zaczyna od nowa. W powtórkach: ${total}, zapamiętane: ${learned().length}.</p></section>
+  <section class="card"><h3>Szybki quiz</h3><p class="lead">10 pytań ze słówek, które już poznane. Za dobrą odpowiedź 10 pkt.</p>
+    ${total >= 4 ? `<button class="btn main" data-act="quizStart">Zacznij quiz</button>` : `<p class="note">Quiz będzie dostępny, gdy poznasz co najmniej 4 słówka.</p>`}
+    <p class="note">Najlepszy wynik: ${S.bestQuiz}/${QUIZ_LEN}</p></section>
+  <section class="card"><h3>Zwroty dla Ciebie</h3><p class="lead">${workIds().length} zwrotów z Twoich tematów: życie, praca, wakacje.</p><button class="btn" data-act="workStart">Ćwicz zwroty</button></section>`;
+}
+function viewCards(){
+  const id = scr.ids[scr.i];
+  if(!id){
+    return `${back("Wróć","home")}<section class="card"><span class="tag">Gotowe</span><p class="big">${scr.correct} / ${scr.ids.length}</p>
+      <p class="lead">${scr.kind==="review" ? "Powtórka skończona. Słowa, które sprawiły kłopot, wrócą jeszcze dziś." : "Zwroty dodane do powtórek."}</p>
+      <button class="btn main" data-act="home">Wróć</button></section>`;
+  }
+  const c = CARD[id];
+  return back("Wróć","home") + wordCard(c, scr.i, scr.ids.length, scr.shown, scr.kind==="review" ? "Powtórka · "+c.src : c.src);
+}
+function viewQuiz(){
+  if(scr.i >= scr.qs.length){
+    return `${back("Wróć","home")}<section class="card"><span class="tag">Wynik</span><p class="big">${scr.score}/${scr.qs.length}</p>
+      <p class="lead">${scr.score>=9?"Świetnie!":scr.score>=6?"Dobrze. Słowa z błędami trafiły do powtórek.":"Zrób powtórki i spróbuj ponownie."}</p>
+      <div class="row"><button class="btn" data-act="home">Wróć</button><button class="btn main" data-act="quizStart">Jeszcze raz</button></div></section>`;
+  }
+  const q = scr.qs[scr.i], c = CARD[q.id], done = scr.picked !== null;
+  return `${back("Wróć","home")}${steps(scr.i, scr.qs.length)}<section class="card" aria-live="polite"><span class="tag">Co to znaczy?</span>
+    <p class="ru">${esc(c.ru)}</p><p class="fon">${esc(c.fon)}</p>
+    ${optsHtml(q.opts.map(o => CARD[o].pl), q.opts.indexOf(q.id), done ? q.opts.indexOf(scr.picked) : null, "data-qpick")}
+    ${done ? `${sayBtns(c.ru.replace(/\s*\(.*?\)/g,""), true)}<button class="btn main" data-act="quizNext">Dalej</button>` : ""}</section>`;
+}
+
+/* ================= ekran: test poziomujący ================= */
+const PLACE = [[6,"A1",1],[12,"A2",2],[17,"B1",3],[20,"B1+ (blisko B2)",3]];
+function viewTest(){
+  if(scr.result){
+    const r = scr.result, u = K.units[currentUnitIdx()];
+    return `<section class="card hero"><span class="tag">Wynik testu</span><p class="big">${r.score} / ${K.test.length}</p>
+      <p>Twój poziom: <b>${esc(r.lvl)}</b></p>
+      ${u ? `<p class="lead">Zaczynasz od lekcji ${K.units.indexOf(u)+1}: <b>${esc(u.title)}</b> (${esc(u.topic)}). Wcześniejsze lekcje możesz zrobić w każdej chwili jako powtórkę.</p>` : ""}
+      <p class="note">Plan na dzień: powtórki, jeden krok lekcji i zwroty. Najważniejsza jest regularność.</p>
+      <button class="btn main" data-act="home">Zaczynam naukę</button></section>`;
+  }
+  const [, q, opts] = K.test[scr.i];
+  return `${back("Przerwij","home")}${steps(scr.i, K.test.length)}<section class="card"><span class="tag">Pytanie ${scr.i+1} z ${K.test.length}</span>
+    <p class="ru sm">${esc(q).split("___").join('<span class="gap">&nbsp;</span>')}</p>
+    <div class="opts">${opts.map((o,k)=>`<button class="opt" data-tpick="${k}">${esc(o)}</button>`).join("")}<button class="opt" data-tpick="-1" style="font-weight:400">Nie wiem</button></div>
+    <p class="note">Nie zgaduj – „Nie wiem” daje dokładniejszy wynik.</p></section>`;
+}
+
+/* ================= ekran: postępy + kopia ================= */
+function viewProgress(){
+  const gm = goalMin();
+  const days = Array.from({length:7}, (_,i) => dayKey(Date.now() - (6-i)*DAY_MS));
+  const mins = days.map(minutesOn), max = Math.max(gm, ...mins);
+  const week = mins.reduce((a,b) => a+b, 0);
+  const names = ["nd","pn","wt","śr","cz","pt","so"];
+  return `<h2>Twoje postępy</h2>
+  <div class="grid">
+    <div class="tile"><span>Punkty</span><b class="big">${S.points}</b></div>
+    <div class="tile"><span>Dni z rzędu</span><b class="big">${S.streak}</b></div>
+    <div class="tile"><span>Zapamiętane słowa</span><b class="big">${learned().length}</b></div>
+    <div class="tile"><span>Lekcje ukończone</span><b class="big">${K.units.filter(unitDone).length}</b></div>
+  </div>
+  <section class="card"><div class="row" style="justify-content:space-between"><h3>Minuty nauki – 7 dni</h3><span class="note">razem ${week} min</span></div>
+    <div class="chart">${days.map((d,i)=>`<div><span>${mins[i]||""}</span><i class="${mins[i]>=gm?"goal":""}" style="height:${Math.round(mins[i]/max*85)}%"></i><span>${names[new Date(d+"T12:00").getDay()]}</span></div>`).join("")}</div>
+    <p class="note">Zielony słupek = cel ${gm} minut osiągnięty.</p></section>
+  ${S.placement ? `<section class="card"><h3>Test poziomujący</h3><p>Wynik ${S.placement.score}/${K.test.length} · poziom <b>${esc(S.placement.lvl)}</b> · ${esc(S.placement.date)}</p><button class="btn" data-act="testStart">Zrób test ponownie</button></section>` : ""}
+  <section class="card"><h3>Twoje odpowiedzi</h3><p class="note">Zmień obszar pracy, zainteresowania, cel albo czas nauki. Lekcje „dla Ciebie” ułożą się od nowa.</p><button class="btn" data-act="obRedo">Zmień odpowiedzi</button></section>
+  <section class="card"><h3>Kopia zapasowa</h3>
+    <p class="note">Postępy są zapisane tylko w tym telefonie. Raz na jakiś czas zapisz kopię – przyda się przy zmianie telefonu albo po wyczyszczeniu danych przeglądarki.</p>
+    <div class="row"><button class="btn" data-act="backupSave">💾 Zapisz kopię</button><button class="btn" data-act="backupLoad">📂 Wczytaj kopię</button></div>
+    <input type="file" id="backupFile" accept=".json,application/json" hidden>
+    <p class="note" id="backupMsg"></p></section>
+  <section class="card"><h3>Jak czytać zapis wymowy</h3>
+    <p class="note">Piszemy polskimi literami. WIELKIE litery to sylaba z akcentem. <b>ch</b> po a, o, u to twarde „ch”, a po i, e – miękkie „h” (ich = ih). <b>ei</b> = aj, <b>eu</b> = oj, <b>ie</b> = długie i, <b>z</b> = c, <b>v</b> = f, <b>w</b> = w, <b>s</b> przed samogłoską = z, <b>sch</b> = sz, <b>sp / st</b> na początku = szp / szt. Litery ä, ö, ü zostają jak w niemieckim (zobacz zakładkę Kurs → Wymowa).</p></section>
+  <section class="card"><h3>Telefon nie czyta po niemiecku?</h3>
+    <p class="note">Ustawienia → wyszukaj „Zamiana tekstu na mowę” → ikonka ustawień przy „Mowa Google” → Zainstaluj dane głosowe → Deutsch. Potem zamknij i otwórz aplikację.</p></section>`;
+}
+
+/* ================= render ================= */
+function render(){
+  $("#chipStreak").textContent = "🔥 " + S.streak;
+  $("#chipPoints").textContent = S.points + " pkt";
+  document.querySelectorAll("nav button").forEach(b => { if(b.dataset.tab===tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+  const html = scr
+    ? (scr.t==="onboard" ? viewOnboard() : scr.t==="unit" ? viewUnit() : scr.t==="cards" ? viewCards() : scr.t==="quiz" ? viewQuiz() : scr.t==="abc" ? viewAbc() : viewTest())
+    : (tab==="today" ? viewToday() : tab==="course" ? viewCourse() : tab==="review" ? viewReviewTab() : viewProgress());
+  $("#view").innerHTML = html;
+}
+const go = s => { scr = s; render(); window.scrollTo(0,0); };
+
+/* ================= akcje ================= */
+function openUnit(i, step){ go({t:"unit", u:i, step: step || nextStep(K.units[i]), i:0, picked:null, shown:false, correct:0, phase:"q"}); }
+function startCards(kind){
+  const ids = kind==="review" ? dueIds().slice(0, REVIEW_MAX)
+    : shuffle(workIds()).sort((a,b) => boxOf(a)-boxOf(b)).slice(0, WORK_LEN);
+  go({t:"cards", kind, ids, i:0, shown:false, correct:0});
+}
+function startQuiz(){
+  const all = Object.keys(CARD);
+  const qs = shuffle(Object.keys(S.cards).filter(id => CARD[id])).slice(0, QUIZ_LEN)
+    .map(id => ({id, opts: shuffle([id, ...shuffle(all.filter(x => x!==id && CARD[x].pl!==CARD[id].pl)).slice(0,3)])}));
+  go({t:"quiz", qs, i:0, picked:null, score:0});
+}
+function finishTest(answers){
+  const score = answers.filter((a,k) => a === K.test[k][3]).length;
+  const [, lvl, rk] = PLACE.find(([max]) => score <= max);
+  S = {...S, placement:{score, lvl, rank:rk, date:today()}};
+  addPoints(20);
+  go({t:"test", result:{score, lvl}});
+}
+function saveBackup(){
+  const blob = new Blob([JSON.stringify({app:"niemiecki-na-co-dzien", v:1, saved:new Date().toISOString(), state:S})], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "niemiecki-kopia-"+today()+".json";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  $("#backupMsg").textContent = "Kopia zapisana w folderze Pobrane.";
+}
+function loadBackup(file){
+  const r = new FileReader();
+  r.onload = () => {
+    try{
+      const data = JSON.parse(r.result);
+      if(data?.app !== "niemiecki-na-co-dzien" || !data.state || typeof data.state !== "object") throw new Error("zły plik");
+      S = sanitizeState(data.state); save(); render();
+      $("#backupMsg").textContent = "Wczytano kopię z " + String(data.saved||"").slice(0,10) + ".";
+    }catch(err){ $("#backupMsg").textContent = "To nie jest plik kopii tej aplikacji. Wybierz plik „niemiecki-kopia-….json”."; }
+  };
+  r.onerror = () => { $("#backupMsg").textContent = "Nie udało się odczytać pliku. Spróbuj ponownie."; };
+  r.readAsText(file);
+}
+function onAct(act){
+  switch(act){
+    case "home": go(null); break;
+    case "toCourse": tab = "course"; go(null); break;
+    case "testStart": go({t:"test", i:0, answers:[]}); break;
+    case "abc": go({t:"abc"}); break;
+    case "testSkip": S = {...S, placement:{score:0, lvl:"bez testu", rank:1, date:today()}}; save(); render(); break;
+    case "unitContinue": { const i = currentUnitIdx(); if(i >= 0) openUnit(i); break; }
+    case "reviewStart": startCards("review"); break;
+    case "workStart": startCards("work"); break;
+    case "quizStart": startQuiz(); break;
+    case "quizNext": {
+      const n = {...scr, i:scr.i+1, picked:null};
+      if(n.i >= n.qs.length){ S = {...S, quizzes:S.quizzes+1, bestQuiz:Math.max(S.bestQuiz, n.score)}; save(); }
+      go(n); break;
+    }
+    case "reveal": scr = {...scr, shown:true}; render(); break;
+    case "grammarDone": markStep(K.units[scr.u], "g"); go({...scr, step:"e", i:0, picked:null, correct:0}); break;
+    case "drillNext": {
+      const u = K.units[scr.u], n = {...scr, i:scr.i+1, picked:null};
+      if(n.i >= u.drill.length) markStep(u, "e");
+      go(n); break;
+    }
+    case "drillAgain": go({...scr, i:0, picked:null, correct:0}); break;
+    case "playDialog": speakDialog(K.units[scr.u].dialog.lines, false); break;
+    case "playDialogSlow": speakDialog(K.units[scr.u].dialog.lines, true); break;
+    case "listenNext": {
+      const u = K.units[scr.u];
+      if(scr.i+1 < u.dialog.qs.length) go({...scr, i:scr.i+1, picked:null});
+      else { if(canSpeak) speechSynthesis.cancel(); markStep(u, "l"); go({...scr, phase:"text"}); }
+      break;
+    }
+    case "unitFinish": { if(unitDone(K.units[scr.u])) addPoints(50); tab = "today"; go(null); break; }
+    case "micStop": mic?.rec?.stop(); break;
+    case "micClose": mic?.rec?.abort?.(); mic = null; renderMic(); break;
+    case "obNext": { const o = scr; if(o.step===0){ const el = document.getElementById("obName"); if(el) o.name = el.value.trim().slice(0,30); } go({...o, step:o.step+1}); break; }
+    case "obBack": go({...scr, step:Math.max(0, scr.step-1)}); break;
+    case "obRedo": go(newOnboard()); break;
+    case "obFinish": {
+      const o = scr, areas = o.areas.filter(a => a !== "nie");
+      S = {...S, profile:{name:o.name, areas, interests:[...o.interests], goal:o.goal, min:o.min}}; save();
+      tab = "today"; go(null); break;
+    }
+    case "backupSave": saveBackup(); break;
+    case "backupLoad": $("#backupFile").click(); break;
+  }
+}
+
+document.addEventListener("change", e => { if(e.target.id === "backupFile" && e.target.files[0]) loadBackup(e.target.files[0]); });
+document.addEventListener("click", e => {
+  const t = e.target.closest("button"); if(!t) return;
+  const d = t.dataset;
+  if(d.ob){
+    const [key, val] = d.ob.split("|");
+    if(key==="areas" || key==="interests") scr = {...scr, [key]: scr[key].includes(val) ? scr[key].filter(x => x!==val) : [...scr[key], val]};
+    else scr = {...scr, [key]: key==="min" ? +val : val};
+    render(); return;
+  }
+  if(d.tab){ tab = d.tab; mic = null; renderMic(); go(null); return; }
+  if(d.say !== undefined){ speak(d.say, false); return; }
+  if(d.saySlow !== undefined){ speak(d.saySlow, true); return; }
+  if(d.mic !== undefined){ startMic(d.mic); return; }
+  if(d.unit !== undefined){ openUnit(+d.unit); return; }
+  if(d.step){ go({...scr, step:d.step, i:0, picked:null, shown:false, correct:0, phase:"q"}); return; }
+  if(d.rate !== undefined){
+    const ok = d.rate === "1";
+    if(scr.t === "unit"){ const u = K.units[scr.u]; rate(u.id+":"+scr.i, ok); if(scr.i+1 >= u.words.length) markStep(u, "w"); }
+    else rate(scr.ids[scr.i], ok);
+    addPoints(ok ? 5 : 1);
+    go({...scr, i:scr.i+1, shown:false, correct: scr.correct + (ok?1:0)}); return;
+  }
+  if(d.pick !== undefined && scr?.t === "unit" && scr.picked === null){
+    const u = K.units[scr.u], k = +d.pick;
+    const ok = scr.step==="e" ? u.drill[scr.i][2]===k : u.dialog.qs[scr.i][2]===k;
+    if(ok) addPoints(10);
+    scr = {...scr, picked:k, correct: scr.correct + (ok?1:0)}; render();
+    if(scr.step==="e"){ const [s, o, c] = u.drill[scr.i]; speak(fill(s, o[c]), false); }
+    return;
+  }
+  if(d.tpick !== undefined){
+    const answers = [...scr.answers, +d.tpick];
+    if(answers.length >= K.test.length) finishTest(answers);
+    else go({...scr, i:scr.i+1, answers});
+    return;
+  }
+  if(d.qpick !== undefined && scr?.t === "quiz" && scr.picked === null){
+    const q = scr.qs[scr.i], picked = q.opts[+d.qpick], ok = picked === q.id;
+    if(ok) addPoints(10); else { rate(q.id, false); save(); }
+    scr = {...scr, picked, score: scr.score + (ok?1:0)}; render(); speak(CARD[q.id].ru.replace(/\s*\(.*?\)/g,""), false); return;
+  }
+  if(d.act) onAct(d.act);
+});
+
+load();
+if(!S.profile) scr = newOnboard();
+render();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
